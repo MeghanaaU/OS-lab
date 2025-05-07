@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX_BLOCKS 50
+
+typedef struct {
+    int startBlock;
+    int length;
+    char fileName[20];
+} File;
+
+int main() {
+    int memory[MAX_BLOCKS] = {0};
+    File files[10];
+    int fileCount = 0;
+    int n, i, j, startBlock, length;
+    char tempFileName[20]; 
+
+    printf("Enter number of files to allocate: ");
+    scanf("%d", &n);
+
+    for (i = 0; i < n; i++) {
+        printf("\nEnter file name: ");
+        scanf("%s", tempFileName);  
+
+        printf("Enter starting block and length of file: ");
+        scanf("%d %d", &startBlock, &length);
+
+        if (startBlock + length > MAX_BLOCKS) {
+            printf("Error: File exceeds disk size. Allocation failed.\n");
+            continue;
+        }
+
+        bool isFree = true;
+        for (j = startBlock; j < startBlock + length; j++) {
+            if (memory[j] != 0) {
+                isFree = false;
+                break;
+            }
+        }
+
+        if (isFree) {
+            for (j = startBlock; j < startBlock + length; j++) {
+                memory[j] = 1;
+            }
+            
+            strcpy(files[fileCount].fileName, tempFileName);
+            files[fileCount].startBlock = startBlock;
+            files[fileCount].length = length;
+            fileCount++;
+            printf("File %s allocated successfully.\n", tempFileName);
+        } else {
+            printf("Error: Some blocks are already allocated. Allocation failed.\n");
+        }
+    }
+
+    printf("\nFile Allocation Table:\n");
+    printf("File\tStart\tLength\n");
+    for (i = 0; i < fileCount; i++) {
+        printf("%s\t%d\t%d\n", files[i].fileName, files[i].startBlock, files[i].length);
+    }
+
+    return 0;
+}
